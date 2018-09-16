@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fest2018ExportApiWorkshop", "Fest2018ExportApiWorkshop\Fest2018ExportApiWorkshop.csproj", "{7D745265-E89C-427F-9976-1826893AD886}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7D745265-E89C-427F-9976-1826893AD886}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D745265-E89C-427F-9976-1826893AD886}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D745265-E89C-427F-9976-1826893AD886}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D745265-E89C-427F-9976-1826893AD886}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1856ABA0-A81E-466B-AAAB-D66407BF91DF}
+	EndGlobalSection
+EndGlobal
