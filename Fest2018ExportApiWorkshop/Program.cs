@@ -10,8 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using FieldRef = Relativity.Services.Objects.DataContracts.FieldRef;
 
 namespace Fest2018ExportApiWorkshop
 {
@@ -23,10 +22,6 @@ namespace Fest2018ExportApiWorkshop
         public int BlockSize { get; set; } = 1000;
         public QueryRequest QueryRequest { get; set; }
 
-        // Utility
-
-        // State
-
         // Indicator that the text is not present and needs to be streamed
         private const string _SHIBBOLETH = "#KCURA99DF2F0FEB88420388879F1282A55760#";
 
@@ -34,20 +29,20 @@ namespace Fest2018ExportApiWorkshop
         {
             Program program = new Program()
             {
-                RelativityUrl = new Uri(args[0]),
-                WorkspaceId = 1017367,
+                RelativityUrl = new Uri("https://relativity.mycompany.com"),
+                WorkspaceId = 1234567,
                 QueryRequest = new QueryRequest()
                 {
-                    Fields = new Relativity.Services.Objects.DataContracts.FieldRef[]
+                    Fields = new FieldRef[]
                     {
-                        new Relativity.Services.Objects.DataContracts.FieldRef {Name = "Control Number"},
-                        new Relativity.Services.Objects.DataContracts.FieldRef {Name = "Extracted Text"}
+                        new FieldRef {Name = "Control Number"},
+                        new FieldRef {Name = "Extracted Text"}
 
                     },
                     MaxCharactersForLongTextValues = 1024,
                     ObjectType = new ObjectTypeRef { ArtifactTypeID = 10 } 
-        },
-                Credentials = new UsernamePasswordCredentials("me@mycompany.com", "MyPasswordDontDoThis987$"),
+                },
+                Credentials = new UsernamePasswordCredentials("me@mycompany.com", "Password goes here"),
                 BlockSize = 10
             };
 
@@ -116,6 +111,7 @@ namespace Fest2018ExportApiWorkshop
                 }
 
                 Console.WriteLine("RunId " + runId + " will return " + recordCount + " documents");
+                Console.WriteLine();
 
                 // Get blocks of documents until no more left
 
@@ -141,6 +137,7 @@ namespace Fest2018ExportApiWorkshop
                     }
 
                     Console.WriteLine("Got block of " + currentBlock.Count() + " documents");
+                    Console.WriteLine();
 
                     foreach (RelativityObjectSlim ros in currentBlock)
                     {
@@ -154,17 +151,23 @@ namespace Fest2018ExportApiWorkshop
                                 if (ros.Values[i].Equals(_SHIBBOLETH))
                                 {
                                     Console.WriteLine("Text is too long, it must be streamed");
+                                    Console.WriteLine();
 
                                     RelativityObjectRef documentObjectRef = new RelativityObjectRef { ArtifactID = ros.ArtifactID };
-                                    IKeplerStream keplerStream = _objectManager.StreamLongTextAsync(WorkspaceId, documentObjectRef, QueryRequest.Fields.ElementAt(i)).Result;
-                                    Stream realStream = keplerStream.GetStreamAsync().Result;
 
-                                    StreamReader reader = new StreamReader(realStream, Encoding.Unicode);
-                                    String line;
-
-                                    while ((line = reader.ReadLine()) != null)
+                                    using (IKeplerStream keplerStream = objectManager.StreamLongTextAsync(WorkspaceId, documentObjectRef, QueryRequest.Fields.ElementAt(i)).Result)
                                     {
-                                        Console.Write(line);
+                                        using (Stream realStream = keplerStream.GetStreamAsync().Result)
+                                        {
+                                            StreamReader reader = new StreamReader(realStream, Encoding.Unicode);
+                                            String line;
+
+                                            while ((line = reader.ReadLine()) != null)
+                                            {
+                                                Console.Write(line);
+                                            }
+                                            Console.WriteLine();
+                                        }
                                     }
                                 }
                             }
@@ -174,8 +177,12 @@ namespace Fest2018ExportApiWorkshop
                         Console.WriteLine();
                     }
 
-                    Console.WriteLine("Complete");
+                    Console.WriteLine("Block complete");
+                    Console.WriteLine();
                 }
+
+                Console.WriteLine("All blocks complete");
+                Console.WriteLine();
             }
             catch (Exception exception)
             {
