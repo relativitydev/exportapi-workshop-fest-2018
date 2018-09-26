@@ -29,8 +29,8 @@ namespace Fest2018ExportApiWorkshop
         {
             Program program = new Program()
             {
-                RelativityUrl = new Uri("https://relativity.mycompany.com"),
-                WorkspaceId = 1234567,
+                RelativityUrl = new Uri("https://fest2018-current-sandbox.relativity.one"),
+                WorkspaceId = 1082531,
                 QueryRequest = new QueryRequest()
                 {
                     Fields = new FieldRef[]
@@ -39,10 +39,13 @@ namespace Fest2018ExportApiWorkshop
                         new FieldRef {Name = "Extracted Text"}
 
                     },
-                    MaxCharactersForLongTextValues = 1024,
-                    ObjectType = new ObjectTypeRef { ArtifactTypeID = 10 } 
+                    MaxCharactersForLongTextValues = 1024 * 10,
+                    ObjectType = new ObjectTypeRef
+                    {
+                        ArtifactTypeID = 10 // Documents
+                    } 
                 },
-                Credentials = new UsernamePasswordCredentials("me@mycompany.com", "Password goes here"),
+                Credentials = new UsernamePasswordCredentials("test-user@fest.com", "Password goes here"),
                 BlockSize = 10
             };
 
@@ -139,6 +142,8 @@ namespace Fest2018ExportApiWorkshop
                     Console.WriteLine("Got block of " + currentBlock.Count() + " documents");
                     Console.WriteLine();
 
+                    // Print out each document's fields 
+
                     foreach (RelativityObjectSlim ros in currentBlock)
                     {
                         for (int i = 0; i < fieldData.Count; i++)
@@ -146,31 +151,33 @@ namespace Fest2018ExportApiWorkshop
                             Console.WriteLine(fieldData[i].Name + ": " + ros.Values[i]);
 
                             /*
-                            if (longTextIds.Contains(i))
+
+                            // If this field is long text and it contains
+                            // only the streaming marker then stream.
+
+                            if (longTextIds.Contains(i) && ros.Values[i].Equals(_SHIBBOLETH))
                             {
-                                if (ros.Values[i].Equals(_SHIBBOLETH))
+                                Console.WriteLine("Text is too long, it must be streamed");
+                                Console.WriteLine();
+
+                                RelativityObjectRef documentObjectRef = new RelativityObjectRef { ArtifactID = ros.ArtifactID };
+
+                                using (IKeplerStream keplerStream = objectManager.StreamLongTextAsync(WorkspaceId, documentObjectRef, QueryRequest.Fields.ElementAt(i)).Result)
                                 {
-                                    Console.WriteLine("Text is too long, it must be streamed");
-                                    Console.WriteLine();
-
-                                    RelativityObjectRef documentObjectRef = new RelativityObjectRef { ArtifactID = ros.ArtifactID };
-
-                                    using (IKeplerStream keplerStream = objectManager.StreamLongTextAsync(WorkspaceId, documentObjectRef, QueryRequest.Fields.ElementAt(i)).Result)
+                                    using (Stream realStream = keplerStream.GetStreamAsync().Result)
                                     {
-                                        using (Stream realStream = keplerStream.GetStreamAsync().Result)
-                                        {
-                                            StreamReader reader = new StreamReader(realStream, Encoding.Unicode);
-                                            String line;
+                                        StreamReader reader = new StreamReader(realStream, Encoding.Unicode);
+                                        String line;
 
-                                            while ((line = reader.ReadLine()) != null)
-                                            {
-                                                Console.Write(line);
-                                            }
-                                            Console.WriteLine();
+                                        while ((line = reader.ReadLine()) != null)
+                                        {
+                                            Console.Write(line);
                                         }
+                                        Console.WriteLine();
                                     }
                                 }
                             }
+
                             */
                         }
 
