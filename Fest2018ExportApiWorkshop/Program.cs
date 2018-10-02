@@ -43,7 +43,7 @@ namespace Fest2018ExportApiWorkshop
                         new FieldRef {Name = "Extracted Text"}
 
               },
-          MaxCharactersForLongTextValues = 1024// * 10
+          MaxCharactersForLongTextValues = 1024 * 10
         }
       };
 
